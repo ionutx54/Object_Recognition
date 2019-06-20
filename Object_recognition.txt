@@ -1,0 +1,60 @@
+* * * * * * * * * * * 
+*          	    *
+*Object recognition *
+*                   *
+* * * * * * * * * * *
+
+Aceasta aplicatie poate recunoaste momentan:
+1- Fata;
+2- Ambii ochi;
+3- Zambetul
+4- Maini + Brate
+
+Principiul este urmatorul: (Exemplificare pe obiectul de tip CEAS)
+	1- Se pregateste data pentru antrenament:
+	*Negativele: Sunt imagini care contin orice inafara de obiectul pe care vrem sa il detectam;
+	*Pozitivele: Imagini cu obiectul;
+	
+A)Negativele si prepararea lor:
+	Pentru preparare am folosit functia download_image_by_link.py;
+Aceasta ia un set de linku-uri,de preferat pre-pregatite intr-o lista, face fetch la fiecare imagine,
+adauga un filtru gri si le redimensioneaza.
+	Dimensiunea se alege in functie de aproximarea marimii obiectului pe care vrem sa il recunoastem;
+Am folosit 5050.png ca fiind "POZITIV", avand dimensiunea 50x50, si am ales arbitrarea dimensiunea de
+100x100 pentru negative.
+	Am creat directorul cu imaginile negative preparate si un fisier bg.txt cu locatia acestora.
+	Am folosit savior.py pentru a concatena FULL PATH la fiecare linie a fisierului bg.txt deoarece lucrand in server,
+trebuia specificat FULL PATH unde sa caute.
+
+B)Pozitivele si prepararea lor:
+	Se poate face in 2 moduri:
+	1)Se genereaza pozitive dintr-o singura poza (MOTODA ACEASTA AM FOLOSIT-O)
+	2)Se iau mai multe poze cu obiectul dorit, se redimensioneaza si se taie astfel incat sa ramana doar obiectul ca centru de interes;
+Metoda pe care am folosit-o ia o singura poza si creeeaza un data vector cu ea, rotind-o in mod aleator, schimbandu-i intensitatea si plasand-o pe 
+fundale aleatoare.
+
+	2- Antrenamentul in sine
+
+Avand data seturile anterioare create folosim functia cv_traincascade.
+Procesul de antrenare consta in:
+Fiecare stadiu de antrenament care reduce ratele de false-positive si scade rata detectarii;
+-Se continua pana in momentul in care am ajuns la stadiul dat ca input.
+-in principiu se poate defini un cadru de optimizare in care: 
+1) numarul de etape de clasificare,
+2) numarul de caracteristici din fiecare etapa ?i 
+3) pragul fiecarei etape
+sunt tranzactionate pentru a minimiza numarul asteptat de caracteristici evaluate.
+
+PARAMETRI FUNCTIEI CV_TRAINCASCADE:
+opencv_traincascade -data data -vec positives.vec -bg bg.txt -numPos 1000 -numNeg 500 -numStages 20 -w 20 -h 20
+
+numPos = nr de sample-uri pozitive
+numNeg = nr de sample-uri negative
+numStages = nr de stadii de antrenament
+-w, -h : latime si inaltime sample-uri de antrenament
+
+
+
+
+
+
